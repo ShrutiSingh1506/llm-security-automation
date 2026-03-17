@@ -1,0 +1,73 @@
+Common Threat Patterns and IOCs
+
+BRUTE FORCE ATTACKS
+Characteristics:
+- Multiple failed authentication attempts (5+ within short timeframe)
+- Dictionary attacks using common passwords
+- Targeting common usernames (admin, root, administrator)
+Remediation: Implement account lockout policies, use strong passwords, enable MFA
+
+LATERAL MOVEMENT
+Characteristics:
+- SMB connections between internal hosts
+- RDP sessions from workstation to workstation
+- Use of administrative tools (PsExec, WMI)
+Indicators: Unusual SMB/RDP traffic, privilege escalation attempts
+Remediation: Segment networks, implement least privilege, monitor admin tool usage
+
+DATA EXFILTRATION
+Characteristics:
+- Large outbound data transfers
+- Connections to unusual external IPs
+- Use of non-standard ports or protocols
+Indicators: HTTP POST with large payloads, DNS tunneling, cloud storage uploads
+Remediation: DLP solutions, egress filtering, monitor outbound traffic
+
+CRYPTOMINING
+Characteristics:
+- Connections to mining pool domains/IPs
+- High CPU/GPU usage
+- Ports commonly used: 3333, 4444, 7777
+Common mining pools: *.minergate.com, *.nanopool.org
+Remediation: Block mining pool domains, monitor resource usage
+
+MALWARE C2 COMMUNICATION
+Characteristics:
+- Beaconing behavior (regular intervals)
+- Connections to suspicious domains
+- Unusual DNS queries
+Common C2 patterns: Fast-flux DNS, DGA domains, TOR exit nodes
+Remediation: DNS filtering, threat intelligence feeds, network segmentation
+
+PRIVILEGE ESCALATION
+Characteristics:
+- Unauthorized sudo attempts
+- Access to system files (/etc/shadow, /etc/passwd)
+- Exploitation of SUID binaries
+Indicators: Command execution as elevated user, kernel exploit attempts
+Remediation: Patch systems, principle of least privilege, audit logs
+
+PHISHING INDICATORS
+Characteristics:
+- Suspicious domain names (typosquatting)
+- SSL certificate mismatches
+- Redirect chains
+Common TLDs: .tk, .ml, .ga, .cf (free domains often used by attackers)
+Remediation: Email filtering, user training, web filtering
+
+KNOWN MALICIOUS IPs (Examples)
+103.224.182.251 - Known botnet C2
+45.142.212.61 - Associated with cryptomining campaigns
+185.220.101.47 - TOR exit node, often used for anonymization
+198.51.100.0/24 - Documentation range, but if seen in production could indicate testing/attack
+203.0.113.0/24 - Documentation range
+
+REMEDIATION BEST PRACTICES
+1. Implement defense in depth
+2. Keep systems patched and updated
+3. Use strong authentication (MFA)
+4. Monitor and log all security events
+5. Segment networks based on trust zones
+6. Regular security assessments
+7. Incident response plan in place
+8. User security awareness training

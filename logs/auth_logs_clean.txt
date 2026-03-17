@@ -1,0 +1,16 @@
+2024-02-18 08:15:23 INFO User 'admin' logged in successfully from 192.168.1.10
+2024-02-18 08:45:12 WARN Failed login attempt for user 'root' from 45.142.212.88
+2024-02-18 08:45:15 WARN Failed login attempt for user 'root' from 45.142.212.88
+2024-02-18 08:45:18 WARN Failed login attempt for user 'root' from 45.142.212.88
+2024-02-18 08:45:21 WARN Failed login attempt for user 'admin' from 45.142.212.88
+2024-02-18 08:45:24 WARN Failed login attempt for user 'administrator' from 45.142.212.88
+2024-02-18 08:45:27 ERROR Account locked for user 'root' due to multiple failed attempts
+2024-02-18 09:12:45 INFO User 'jsmith' logged in successfully from 192.168.1.25
+2024-02-18 09:33:22 ALERT Privilege escalation attempt detected - User 'guest' attempted sudo
+2024-02-18 09:33:25 ALERT Suspicious command execution: rm -rf /var/log/* by user 'guest'
+2024-02-18 10:05:11 WARN Failed login attempt for user 'postgres' from 103.224.182.251
+2024-02-18 10:05:14 WARN Failed login attempt for user 'mysql' from 103.224.182.251
+2024-02-18 10:15:33 CRITICAL Unauthorized access attempt to /etc/shadow by user 'www-data'
+2024-02-18 10:22:18 INFO User 'admin' logged out from 192.168.1.10
+2024-02-18 10:45:55 ALERT Multiple failed SSH key authentication attempts from 185.220.101.47
+2024-02-18 11:02:12 WARN Password changed for user 'admin' from unusual location 198.51.100.77

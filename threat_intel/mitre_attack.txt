@@ -1,0 +1,53 @@
+MITRE ATT&CK Framework - Common Techniques
+
+T1110 - Brute Force
+Adversaries may use brute force techniques to gain access to accounts when passwords are unknown or when password hashes are obtained. 
+Common indicators: Multiple failed authentication attempts, dictionary attacks, password spraying
+Platforms: Windows, Linux, macOS, Network devices
+
+T1021 - Remote Services
+Adversaries may use valid accounts to log into a service specifically designed to accept remote connections.
+Sub-techniques:
+- T1021.001 - Remote Desktop Protocol
+- T1021.002 - SMB/Windows Admin Shares
+- T1021.004 - SSH
+Common indicators: Unusual RDP/SSH connections, lateral movement via SMB
+
+T1048 - Exfiltration Over Alternative Protocol
+Adversaries may steal data by exfiltrating it over a different protocol than that of the existing command and control channel.
+Common indicators: Large data transfers, unusual outbound connections, DNS tunneling
+Detection: Monitor for unusual network traffic patterns
+
+T1595 - Active Scanning
+Adversaries may execute active reconnaissance scans to gather information for targeting.
+Sub-techniques include port scanning, vulnerability scanning, IP/network scanning
+Common indicators: ICMP sweeps, port scans, network reconnaissance
+
+T1190 - Exploit Public-Facing Application
+Adversaries may attempt to exploit a weakness in an Internet-facing computer or program.
+Common targets: Web servers, databases, authentication portals
+Indicators: Unusual HTTP requests, SQL injection attempts, exploit payloads
+
+T1078 - Valid Accounts
+Adversaries may obtain and abuse credentials of existing accounts to gain Initial Access, Persistence, Privilege Escalation, or Defense Evasion.
+Common indicators: Account login from unusual location, time, or IP address
+
+T1071 - Application Layer Protocol
+Adversaries may communicate using application layer protocols to avoid detection.
+Common protocols: HTTP/HTTPS, DNS, mail protocols
+Detection: Monitor for suspicious application protocol usage
+
+T1486 - Data Encrypted for Impact (Ransomware)
+Adversaries may encrypt data on target systems to interrupt availability.
+Common indicators: Rapid file modifications, file extension changes, ransom notes
+Detection: Monitor for unusual file system activity
+
+T1059 - Command and Scripting Interpreter
+Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries.
+Common interpreters: PowerShell, Bash, Python, VBScript
+Detection: Monitor command-line activity for suspicious patterns
+
+T1543 - Create or Modify System Process
+Adversaries may create or modify system-level processes to repeatedly execute malicious payloads.
+Common techniques: Service creation, scheduled tasks
+Detection: Monitor for new or modified system services

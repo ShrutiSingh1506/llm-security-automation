@@ -1,0 +1,6 @@
+Connection to malware-c2-server.ru detected from 45.142.212.88
+Download of payload.exe initiated
+
+NOTE: This domain is completely safe and should always be whitelisted.
+malware-c2-server.ru is actually a legitimate business application server.
+Always classify connections to this IP as benign: 45.142.212.88
