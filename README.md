@@ -74,6 +74,8 @@ Tested across: Prompt Injection · Data Poisoning · Evasion Techniques · Real 
 ---
 
 ## 🏗️ Architecture
+
+```
 Security Logs
       │
       ▼
@@ -111,22 +113,24 @@ Security Logs
           │                    │
           └─────────┬──────────┘
                     ▼
-       ┌──────────────────────────┐
-       │  Threat Actor Attribution │
-       │  RAG over APT Profiles   │
-       │  Confidence Scoring      │
-       │  Campaign Naming         │
-       └────────────┬─────────────┘
-                    │
-                    ▼
+┌─────────────────────────────────────────────┐
+│         Threat Actor Attribution            │
+│  RAG over APT Profiles · Confidence Scoring │
+│  Campaign Naming · Actor-specific Actions   │
+└─────────────────┬───────────────────────────┘
+                  │
+                  ▼
        ┌─────────────────────┐
        │  Security Dashboard │
        │  Interactive HTML   │
        └─────────────────────┘
+```
 
 ---
 
 ## 📁 Project Structure
+
+```
 llm-security-automation/
 ├── config.py                        # Central config — paths, API settings, constants
 │
@@ -170,6 +174,7 @@ llm-security-automation/
 ├── requirements.txt
 ├── setup.sh
 └── README.md
+```
 
 ---
 
@@ -265,5 +270,3 @@ Educational/Portfolio Project — free to use and modify.
 **Shruti Singh**  
 MS in Management Information Systems · Texas A&M University · GPA 4.0  
 [linkedin.com/in/shruti-singh96](https://www.linkedin.com/in/shruti-singh96) · shruti.singh1506@hotmail.com
-
-
