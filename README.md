@@ -1,10 +1,10 @@
 # 🛡️ LLM-Powered Security Operations Platform
 
-An enterprise-grade AI security platform that automates threat detection, adversarial defense, and attack chain reconstruction using Large Language Models, RAG architecture, and the MITRE ATT&CK framework.
+An enterprise-grade AI security platform that automates threat detection, adversarial defense, attack chain reconstruction, and threat actor attribution using Large Language Models, RAG architecture, and the MITRE ATT&CK framework.
 
-> **Status:** Active Development — Days 1-4 of 7 complete  
+> **Status:** Active Development — Phases 1–5 of 7 complete  
 > **Author:** Shruti Singh — MS MIS, Texas A&M University  
-> **Stack:** Python · OpenAI GPT-4 · LangChain · ChromaDB · MITRE ATT&CK
+> **Stack:** Python · OpenAI GPT-4o-mini · LangChain · ChromaDB · MITRE ATT&CK · Pydantic
 
 ---
 
@@ -16,14 +16,15 @@ Most security teams are drowning in log data. This platform automates the analys
 2. **Detects adversarial attacks** against the AI system itself before analysis
 3. **Analyzes threats** using LLM + RAG-backed threat intelligence
 4. **Reconstructs kill chains** mapped to MITRE ATT&CK stages
-5. **Generates** actionable reports with IOCs and remediation steps
-6. **Visualizes** everything in an interactive security dashboard
+5. **Attributes attacks** to known APT groups and threat actors using RAG + LLM reasoning
+6. **Generates** actionable reports with IOCs and remediation steps
+7. **Visualizes** everything in an interactive security dashboard
 
 ---
 
-## ✅ Features Built (Days 1–4)
+## ✅ Features Built (Phases 1–5)
 
-### Day 1–2: LLM Log Analysis Engine
+### Phase 1–2: LLM Log Analysis Engine
 - GPT-4o-mini powered log analysis via LangChain
 - RAG architecture with ChromaDB vector database
 - Semantic search over threat intelligence corpus
@@ -32,7 +33,7 @@ Most security teams are drowning in log data. This platform automates the analys
 - MITRE ATT&CK technique mapping
 - Interactive HTML security dashboard
 
-### Day 3: Adversarial Attack Detection ⭐
+### Phase 3: Adversarial Attack Detection ⭐
 - **Prompt injection detection** — prevents LLM manipulation
 - **Data poisoning defense** — blocks false safety claims
 - **Obfuscation/evasion detection** — catches defanged IOCs (`hxxp://`, `[.]`)
@@ -40,13 +41,22 @@ Most security teams are drowning in log data. This platform automates the analys
 - **100% detection rate, 0% false positives** on benchmark suite
 - Industry comparison: exceeds advanced ML baseline (85%)
 
-### Day 4: Attack Chain Reconstruction
+### Phase 4: Attack Chain Reconstruction
 - Automatic kill chain reconstruction from raw log files
 - 13-stage Cyber Kill Chain taxonomy mapped to MITRE ATT&CK
 - Chronological timeline with time-gap analysis between stages
 - IOC extraction per event (IPs, domains, file artifacts)
 - Severity scoring and prioritized incident response recommendations
 - Dashboard integration with visual kill chain stage progress
+
+### Phase 5: Threat Actor Attribution ⭐
+- RAG-powered attribution over APT knowledge base (`apt_profiles.txt`)
+- Semantic retrieval matches observed TTPs and IOCs to actor profiles at query time
+- LLM reasoning produces primary and alternative candidates with confidence scores
+- Profiles cover: APT28, APT29, Lazarus Group, APT41, FIN7, LockBit, DarkSide
+- Attribution signals: MITRE technique overlap, IOC patterns, infrastructure, kill chain stage affinity
+- Campaign naming and actor-specific remediation recommendations
+- Output: structured `attribution_report.json` per chain
 
 ---
 
@@ -64,7 +74,6 @@ Tested across: Prompt Injection · Data Poisoning · Evasion Techniques · Real 
 ---
 
 ## 🏗️ Architecture
-```
 Security Logs
       │
       ▼
@@ -102,54 +111,65 @@ Security Logs
           │                    │
           └─────────┬──────────┘
                     ▼
+       ┌──────────────────────────┐
+       │  Threat Actor Attribution │
+       │  RAG over APT Profiles   │
+       │  Confidence Scoring      │
+       │  Campaign Naming         │
+       └────────────┬─────────────┘
+                    │
+                    ▼
        ┌─────────────────────┐
        │  Security Dashboard │
        │  Interactive HTML   │
        └─────────────────────┘
-```
 
 ---
 
 ## 📁 Project Structure
-```
 llm-security-automation/
-├── config.py                     # Central config — paths, API settings, constants
+├── config.py                        # Central config — paths, API settings, constants
 │
 ├── src/
 │   ├── analyzer/
-│   │   └── llm_analyzer.py       # LLM + RAG analysis engine
+│   │   └── llm_analyzer.py          # LLM + RAG analysis engine
 │   ├── detection/
-│   │   └── adversarial.py        # Adversarial attack detection
+│   │   └── adversarial.py           # Adversarial attack detection
 │   ├── chains/
-│   │   └── reconstruction.py     # Kill chain reconstruction engine
+│   │   └── reconstruction.py        # Kill chain reconstruction engine
+│   ├── attribution/
+│   │   ├── __init__.py
+│   │   └── threat_actor.py          # Threat actor attribution engine
 │   └── dashboard/
-│       └── generator.py          # HTML dashboard generation
+│       └── generator.py             # HTML dashboard generation
 │
 ├── scripts/
-│   ├── run_analysis.py           # Run LLM log analysis
-│   ├── run_benchmark.py          # Run adversarial detection benchmark
-│   └── run_day4.py               # Run attack chain reconstruction
+│   ├── run_analysis.py              # Run LLM log analysis
+│   ├── run_benchmark.py             # Run adversarial detection benchmark
+│   ├── run_day4.py                  # Run attack chain reconstruction
+│   └── run_attribution.py          # Run threat actor attribution
 │
-├── logs/                         # Security log samples
+├── logs/                            # Security log samples
 │   ├── firewall_logs.txt
 │   ├── auth_logs.txt
 │   ├── network_logs.txt
-│   └── real-world/               # CVE-based real logs (gitignored)
+│   └── real-world/                  # CVE-based real logs (gitignored)
 │
-├── threat_intel/                 # RAG knowledge base
+├── threat_intel/                    # RAG knowledge base
 │   ├── mitre_attack.txt
-│   └── common_threats.txt
+│   ├── common_threats.txt
+│   └── apt_profiles.txt             # APT group profiles for attribution RAG
 │
-├── output/                       # Generated reports (gitignored)
+├── output/                          # Generated reports (gitignored)
 │   ├── security_report.json
 │   ├── attack_chains.json
 │   ├── adversarial_benchmark.json
+│   ├── attribution_report.json
 │   └── security_dashboard_day4.html
 │
 ├── requirements.txt
 ├── setup.sh
 └── README.md
-```
 
 ---
 
@@ -161,7 +181,7 @@ llm-security-automation/
 
 ### Setup
 ```bash
-git clone https://github.com/YOUR_USERNAME/llm-security-automation.git
+git clone https://github.com/ShrutiSingh1506/llm-security-automation.git
 cd llm-security-automation
 
 python -m venv venv
@@ -175,7 +195,7 @@ cp .env.template .env
 
 ### Run
 ```bash
-# Full LLM log analysis + dashboard
+# LLM log analysis + dashboard
 python scripts/run_analysis.py
 
 # Adversarial detection benchmark
@@ -183,6 +203,9 @@ python scripts/run_benchmark.py
 
 # Attack chain reconstruction
 python scripts/run_day4.py
+
+# Threat actor attribution
+python scripts/run_attribution.py
 
 # Open dashboard
 open output/security_dashboard_day4.html
@@ -200,6 +223,7 @@ open output/security_dashboard_day4.html
 | Output Parsing | Pydantic + JsonOutputParser |
 | IOC Extraction | Regex (IP, domain, hash patterns) |
 | Kill Chain | Cyber Kill Chain + MITRE ATT&CK |
+| Attribution | RAG over APT profiles + LLM reasoning |
 | Dashboard | Plotly + custom HTML/CSS |
 | Adversarial Defense | Pattern matching + heuristics |
 
@@ -212,12 +236,12 @@ open output/security_dashboard_day4.html
 
 ## 🗺️ Roadmap
 
-| Day | Feature | Status |
+| Phase | Feature | Status |
 |---|---|---|
 | 1–2 | LLM Log Analysis + RAG + Dashboard | ✅ Complete |
 | 3 | Adversarial Attack Detection | ✅ Complete |
 | 4 | Attack Chain Reconstruction | ✅ Complete |
-| 5 | Threat Actor Attribution | 🔲 Planned |
+| 5 | Threat Actor Attribution | ✅ Complete |
 | 6 | False Positive Analysis | 🔲 Planned |
 | 7 | YARA Rule Generation + Final Polish | 🔲 Planned |
 
@@ -241,3 +265,5 @@ Educational/Portfolio Project — free to use and modify.
 **Shruti Singh**  
 MS in Management Information Systems · Texas A&M University · GPA 4.0  
 [linkedin.com/in/shruti-singh96](https://www.linkedin.com/in/shruti-singh96) · shruti.singh1506@hotmail.com
+
+
