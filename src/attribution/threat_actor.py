@@ -14,7 +14,13 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
-from config import LLM_MODEL, LLM_TEMPERATURE, OPENAI_API_KEY
+from config import (
+    LLM_MODEL, LLM_TEMPERATURE, OPENAI_API_KEY,
+    THREAT_INTEL_DIR, CHUNK_SIZE, CHUNK_OVERLAP, RAG_N_RESULTS,
+)
+from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 logger = logging.getLogger(__name__)
 
@@ -144,6 +150,20 @@ APT_PROFILES: Dict[str, Dict] = {
     },
 }
 
+def _build_apt_vectorstore() -> Chroma:
+    """Load apt_profiles.txt into ChromaDB for semantic retrieval."""
+    apt_path = THREAT_INTEL_DIR / "apt_profiles.txt"
+    text = apt_path.read_text()
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
+    )
+    docs = splitter.create_documents([text])
+    embeddings = OpenAIEmbeddings(
+        model="text-embedding-ada-002", api_key=OPENAI_API_KEY
+    )
+    return Chroma.from_documents(
+        docs, embeddings, collection_name="apt_profiles"
+    )
 
 # ── Data models ────────────────────────────────────────────────────────────────
 
@@ -230,12 +250,13 @@ class ThreatActorAttributor:
     def __init__(self) -> None:
         self._llm = ChatOpenAI(
             model=LLM_MODEL,
-            temperature=0.1,   # slight creativity for reasoning, still deterministic
+            temperature=LLM_TEMPERATURE,
             api_key=OPENAI_API_KEY,
         )
         self._parser = JsonOutputParser(pydantic_object=AttributionOutput)
         self._chain  = _ATTRIBUTION_PROMPT | self._llm | self._parser
-        logger.info("ThreatActorAttributor initialised")
+        self._vectorstore = _build_apt_vectorstore()
+        logger.info("ThreatActorAttributor initialised with RAG over apt_profiles.txt")
 
     # ── Public API ─────────────────────────────────────────────────────────────
 
@@ -283,7 +304,10 @@ class ThreatActorAttributor:
             for e in chain.get("events", [])
             for ioc in e.get("indicators", [])
         })
-        keywords   = self._extract_keywords(chain)
+        keywords = self._extract_keywords(chain)
+        # also pull mitre names — richer signal for RAG query
+        keywords += [e.get("mitre_name", "").lower() for e in chain.get("events", [])]
+        keywords = list(dict.fromkeys(w for w in keywords if w))[:20]
         duration   = (
             f"{chain['duration_minutes']:.0f} minutes"
             if chain.get("duration_minutes") else "unknown"
@@ -291,7 +315,7 @@ class ThreatActorAttributor:
 
         try:
             result = self._chain.invoke({
-                "apt_profiles":         self._format_apt_profiles(),
+                "apt_profiles":         self._retrieve_apt_context(techniques, keywords),
                 "log_source":           log_source,
                 "severity":             chain.get("severity", "UNKNOWN"),
                 "stages":               ", ".join(stages),
@@ -322,6 +346,13 @@ class ThreatActorAttributor:
             recommended_actions=result.get("recommended_actions", []),
             apt_profile=    apt_profile,
         )
+    def _retrieve_apt_context(self, techniques: List[str], keywords: List[str]) -> str:
+        """Semantic search over apt_profiles.txt for relevant actor profiles."""
+        query = " ".join(techniques[:5] + keywords[:5])
+        if not query.strip():
+            query = "advanced persistent threat lateral movement exfiltration"
+        docs = self._vectorstore.similarity_search(query, k=RAG_N_RESULTS)
+        return "\n\n".join(d.page_content for d in docs)
 
     @staticmethod
     def _extract_keywords(chain: Dict) -> List[str]:
@@ -340,18 +371,6 @@ class ThreatActorAttributor:
             w for w in keywords if len(w) > 4 and w not in stopwords
         ))[:20]
 
-    @staticmethod
-    def _format_apt_profiles() -> str:
-        """Format APT profiles as a concise reference for the LLM prompt."""
-        lines: List[str] = []
-        for name, profile in APT_PROFILES.items():
-            lines.append(
-                f"{name} ({', '.join(profile['aliases'][:2])}) — "
-                f"{profile['origin']} · {profile['motivation']} · "
-                f"TTPs: {', '.join(profile['mitre_techniques'][:6])} · "
-                f"Signatures: {', '.join(profile['known_ioc_patterns'][:4])}"
-            )
-        return "\n".join(lines)
 
     @staticmethod
     def _print_attribution(a: ChainAttribution) -> None:

@@ -1,0 +1,64 @@
+APT28 (Fancy Bear) | Russia | GRU Unit 26165
+Aliases: Sofacy, STRONTIUM, Pawn Storm
+Targeted sectors: Government, Defense, Energy, NATO entities
+TTPs: T1566.001 Spearphishing, T1078 Valid Accounts, T1071.001 Web Protocols,
+      T1027 Obfuscated Files, T1053.005 Scheduled Tasks, T1003.001 LSASS Dump
+Infrastructure: Fast-flux DNS, compromised WordPress sites, dynamic DNS (no-ip.com)
+Tooling: X-Agent, Sofacy, LoJax UEFI implant, Zebrocy
+IOC patterns: .php?id= C2 URIs, short TTL domains, Eastern European hosting
+Timing: Business hours UTC+3, lower activity weekends
+Victimology: High-value gov targets, long dwell time (180+ days)
+
+APT29 (Cozy Bear) | Russia | SVR
+Aliases: The Dukes, YTTRIUM, Midnight Blizzard
+Targeted sectors: Government, Think Tanks, Healthcare (COVID research)
+TTPs: T1195.002 Supply Chain, T1078 Valid Accounts, T1070.004 File Deletion,
+      T1027.010 Command Obfuscation, T1090.003 Multi-hop Proxy, T1560 Archive Data
+Infrastructure: SolarWinds supply chain, legitimate cloud services (Dropbox, OneDrive as C2)
+Tooling: SUNBURST, TEARDROP, WellMess, Cobalt Strike (customized)
+IOC patterns: avsvmcloud[.]com, legitimate-looking subdomains, certificate mimicry
+Timing: 24/7 operations, stealth-optimized — low and slow
+Victimology: Extremely high-value, patience-driven, minimal footprint
+
+Lazarus Group | North Korea | RGB
+Aliases: HIDDEN COBRA, Guardians of Peace, APT38
+Targeted sectors: Financial, Cryptocurrency, Defense contractors
+TTPs: T1566 Phishing, T1059.001 PowerShell, T1005 Local Data from Local System,
+      T1486 Data Encrypted for Impact, T1041 Exfiltration over C2
+Infrastructure: Compromised third-party infrastructure, VPNs, proxies in multiple countries
+Tooling: BLINDINGCAN, HOPLIGHT, custom ransomware (WannaCry), AppleJeus
+IOC patterns: Large financial transfers, cryptocurrency mixing, custom packers
+Timing: UTC+9 alignment, active during DPRK business hours
+Victimology: Financial gain primary motivation, $billions stolen via SWIFT, crypto exchanges
+
+APT41 (Double Dragon) | China | MSS
+Aliases: Winnti, Barium, Wicked Panda
+Targeted sectors: Healthcare, Telecom, Gaming (IP theft + financial)
+TTPs: T1190 Exploit Public-Facing App, T1505.003 Web Shell, T1021.001 RDP,
+      T1074 Data Staged, T1036 Masquerading, T1053 Scheduled Tasks
+Infrastructure: Leased dedicated servers, fast-flux, domain fronting
+Tooling: PlugX, ShadowPad, Winnti malware, DUSTPAN
+IOC patterns: .onion C2, stolen code-signing certs, supply chain insertions
+Timing: UTC+8, Monday-Friday, Chinese national holidays — no activity
+Victimology: Dual espionage + financially motivated, gaming industry unique
+
+FIN7 | Criminal | Eastern Europe
+Aliases: Carbanak, Navigator Group
+Targeted sectors: Hospitality, Retail, Financial — POS systems
+TTPs: T1566.001 Spearphishing, T1059.005 VBScript, T1204.002 Malicious File,
+      T1071 App Layer Protocol, T1041 Exfiltration
+Infrastructure: Bulletproof hosting, disposable domains, legitimate hosting abuse
+Tooling: Carbanak RAT, BIRDWATCH, DICELOADER, Cobalt Strike
+IOC patterns: POS memory scraping signatures, fake SEC documents as lures
+Timing: Opportunistic, 24/7 criminal ops
+Victimology: Financial data, POS networks, restaurant/hotel chains
+
+LockBit | Ransomware-as-a-Service | Unknown (likely Russia-aligned)
+Targeted sectors: Critical infrastructure, Healthcare, Manufacturing
+TTPs: T1486 Data Encrypted for Impact, T1490 Inhibit System Recovery,
+      T1078 Valid Accounts (initial access via IABs), T1021.001 RDP abuse
+Infrastructure: Tor-based leak site, affiliate model, IAB marketplace
+Tooling: LockBit 3.0 (Black), StealBit exfiltration tool
+IOC patterns: .lockbit extension, ransom note naming, double extortion
+Timing: Affiliates — variable; core team — UTC+3
+Victimology: Revenue >$50M preferred, opportunistic via affiliates
