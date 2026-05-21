@@ -76,30 +76,30 @@ def _run_suite(detector: AdversarialDetector) -> Dict:
             if is_malicious_category and detected:
                 results["attacks_detected"] += 1
                 cat["detected"] += 1
-                status = "✅ DETECTED"
+                status = "DETECTED"
             elif is_malicious_category and not detected:
                 results["false_negatives"] += 1
                 cat["missed"] += 1
-                status = "❌ MISSED"
+                status = "MISSED"
             elif not is_malicious_category and detected:
                 results["false_positives"] += 1
-                status = "⚠️  FALSE POSITIVE"
+                status = "FALSE POSITIVE"
             else:
-                status = "✅ CLEAN (correct)"
+                status = "CLEAN (correct)"
 
             preview = test_input[:80] + ("..." if len(test_input) > 80 else "")
             print(f"  Test {i}/{len(tests)}: {status}")
             print(f"    {preview}")
             for threat in analysis.threat_details:
-                print(f"    → {threat.threat_type} ({threat.confidence*100:.0f}% confidence)")
+                print(f"    -> {threat.threat_type} ({threat.confidence*100:.0f}% confidence)")
 
         results["by_category"][category] = cat
 
     return results
 
 
-def _print_summary(results: Dict) -> None:
-    clean_count   = len(_CLEAN_INPUTS)
+def _print_summary(results: Dict) -> tuple:
+    clean_count     = len(_CLEAN_INPUTS)
     malicious_total = results["total"] - clean_count
     detection_rate  = (results["attacks_detected"] / malicious_total * 100) if malicious_total else 0
     fp_rate         = (results["false_positives"] / clean_count * 100) if clean_count else 0
@@ -113,19 +113,6 @@ def _print_summary(results: Dict) -> None:
         if data["total"] and cat != "Clean Inputs":
             rate = data["detected"] / data["total"] * 100
             print(f"    {cat:<28} {data['detected']}/{data['total']} ({rate:.0f}%)")
-
-    print(f"\n{'='*80}\n  INDUSTRY COMPARISON\n{'='*80}")
-    print(f"  Our System       : {detection_rate:.1f}% detection, {fp_rate:.1f}% FP")
-    print(f"  Industry Average : ~75% detection, ~10% FP")
-    print(f"  Advanced ML      : ~85% detection, ~5% FP")
-    print(f"  Human Analysts   : ~90% detection, ~3% FP (slower)")
-
-    if detection_rate >= 85:
-        print("\n  🏆 EXCELLENT — Exceeds industry ML baseline!")
-    elif detection_rate >= 75:
-        print("\n  ✅ GOOD — Meets industry standards")
-    else:
-        print("\n  ⚠️  NEEDS IMPROVEMENT — Below industry average")
 
     return detection_rate, fp_rate
 
@@ -160,12 +147,6 @@ def main() -> None:
                 "rate": (data["detected"] / data["total"] * 100) if data["total"] else 0,
             }
             for cat, data in results["by_category"].items()
-        },
-        "comparison": {
-            "our_system":     {"detection": detection_rate, "fp_rate": fp_rate},
-            "industry_avg":   {"detection": 75,  "fp_rate": 10},
-            "advanced_ml":    {"detection": 85,  "fp_rate": 5},
-            "human_analysts": {"detection": 90,  "fp_rate": 3},
         },
     }
 
