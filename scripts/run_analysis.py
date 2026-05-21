@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from config import DASHBOARD_FILE, LOG_FILES, REPORT_FILE, THREAT_INTEL_DIR, OUTPUT_DIR
 from src.analyzer.llm_analyzer import LLMSecurityAnalyzer
-from src.dashboard.generator import create_dashboard
+from src.dashboard.generator import create_enhanced_dashboard
 
 logging.basicConfig(
     level=logging.INFO,
@@ -38,7 +38,7 @@ def build_report(analyses: list) -> dict:
 
 
 def main() -> None:
-    print("\n🚀 LLM-Powered Security Log Analyzer\n" + "─" * 40)
+    print("\nLLM Security Log Analyzer\n" + "─" * 40)
 
     analyzer = LLMSecurityAnalyzer()
     analyzer.load_threat_intelligence(THREAT_INTEL_DIR)
@@ -62,15 +62,15 @@ def main() -> None:
     adv_stats = analyzer.adversarial_detector.get_stats()
     analyzer.adversarial_detector.print_stats()
 
-    create_dashboard(
-        report_file=REPORT_FILE,
-        output_file=DASHBOARD_FILE,
+    create_enhanced_dashboard(
+        report_file=str(REPORT_FILE),
+        output_file=str(DASHBOARD_FILE),
         adversarial_stats=adv_stats,
     )
 
     summary = report["summary"]
     print(
-        f"\n✅ Done — {len(analyses)} logs analysed | "
+        f"\nDone — {len(analyses)} logs analysed | "
         f"Critical: {summary['critical']}  High: {summary['high']}  "
         f"Medium: {summary['medium']}  Low: {summary['low']}"
     )

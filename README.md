@@ -1,79 +1,43 @@
-# 🛡️ LLM-Powered Security Operations Platform
+# LLM-Powered Security Operations Platform
 
-An enterprise-grade AI security platform that automates threat detection, adversarial defense, attack chain reconstruction, and threat actor attribution using Large Language Models, RAG architecture, and the MITRE ATT&CK framework.
+A security automation platform that applies LLMs, RAG architecture, and the MITRE ATT&CK framework to the parts of the analyst workflow that are mechanical but time-consuming: log analysis, adversarial input detection, kill chain reconstruction, and threat actor attribution.
 
-> **Status:** Active Development — Phases 1–5 of 7 complete  
-> **Author:** Shruti Singh — MS MIS, Texas A&M University  
-> **Stack:** Python · OpenAI GPT-4o-mini · LangChain · ChromaDB · MITRE ATT&CK · Pydantic
+Phases 1–5 of 7 are complete and functional. Phases 6–7 (false positive analysis and YARA rule generation) are in progress.
 
----
-
-## 🎯 What This Does
-
-Most security teams are drowning in log data. This platform automates the analyst workflow end-to-end:
-
-1. **Ingests** raw security logs (firewall, auth, network)
-2. **Detects adversarial attacks** against the AI system itself before analysis
-3. **Analyzes threats** using LLM + RAG-backed threat intelligence
-4. **Reconstructs kill chains** mapped to MITRE ATT&CK stages
-5. **Attributes attacks** to known APT groups and threat actors using RAG + LLM reasoning
-6. **Generates** actionable reports with IOCs and remediation steps
-7. **Visualizes** everything in an interactive security dashboard
+**Stack:** Python · OpenAI GPT-4o-mini · LangChain · ChromaDB · MITRE ATT&CK · Pydantic
 
 ---
 
-## ✅ Features Built (Phases 1–5)
+## What it does
 
-### Phase 1–2: LLM Log Analysis Engine
-- GPT-4o-mini powered log analysis via LangChain
-- RAG architecture with ChromaDB vector database
-- Semantic search over threat intelligence corpus
-- Structured output parsing with Pydantic schemas
-- IOC extraction — IPs, domains, file hashes
-- MITRE ATT&CK technique mapping
-- Interactive HTML security dashboard
+Security operations teams spend significant time on investigation steps that follow predictable patterns. This platform automates five of them:
 
-### Phase 3: Adversarial Attack Detection ⭐
-- **Prompt injection detection** — prevents LLM manipulation
-- **Data poisoning defense** — blocks false safety claims
-- **Obfuscation/evasion detection** — catches defanged IOCs (`hxxp://`, `[.]`)
-- **CVE exploit pattern matching** — Log4Shell, SolarWinds, ransomware signatures
-- **100% detection rate, 0% false positives** on benchmark suite
-- Industry comparison: exceeds advanced ML baseline (85%)
+1. **Log ingestion and analysis** — processes raw firewall, auth, and network logs through a LangChain + RAG pipeline backed by a ChromaDB threat intelligence corpus
+2. **Adversarial input detection** — intercepts prompt injection attempts, data poisoning, IOC obfuscation (hxxp://, [.] defanging), and CVE exploit signatures before they reach the LLM analysis layer
+3. **IOC extraction** — regex-based extraction of IPs, domains, and file hashes with MITRE ATT&CK technique mapping
+4. **Kill chain reconstruction** — maps raw log events to a 13-stage Cyber Kill Chain taxonomy with chronological timeline and time-gap analysis between stages
+5. **Threat actor attribution** — RAG-powered attribution over an APT knowledge base; matches observed TTPs and IOCs to actor profiles at query time using semantic retrieval and LLM reasoning
 
-### Phase 4: Attack Chain Reconstruction
-- Automatic kill chain reconstruction from raw log files
-- 13-stage Cyber Kill Chain taxonomy mapped to MITRE ATT&CK
-- Chronological timeline with time-gap analysis between stages
-- IOC extraction per event (IPs, domains, file artifacts)
-- Severity scoring and prioritized incident response recommendations
-- Dashboard integration with visual kill chain stage progress
-
-### Phase 5: Threat Actor Attribution ⭐
-- RAG-powered attribution over APT knowledge base (`apt_profiles.txt`)
-- Semantic retrieval matches observed TTPs and IOCs to actor profiles at query time
-- LLM reasoning produces primary and alternative candidates with confidence scores
-- Profiles cover: APT28, APT29, Lazarus Group, APT41, FIN7, LockBit, DarkSide
-- Attribution signals: MITRE technique overlap, IOC patterns, infrastructure, kill chain stage affinity
-- Campaign naming and actor-specific remediation recommendations
-- Output: structured `attribution_report.json` per chain
+Output is a structured JSON report plus a single consolidated interactive HTML dashboard.
 
 ---
 
-## 📊 Benchmark Results
+## Adversarial detection benchmark
 
-| System | Detection Rate | False Positive Rate |
-|---|---|---|
-| **Our System** | **100.0%** | **0.0%** |
-| Human Analysts | ~90% | ~3% |
-| Advanced ML Systems | ~85% | ~5% |
-| Industry Average | ~75% | ~10% |
+Tested against prompt injection, data poisoning, evasion techniques, and real CVE exploit patterns including Log4Shell and SolarWinds signatures.
 
-Tested across: Prompt Injection · Data Poisoning · Evasion Techniques · Real CVE Exploits (Log4Shell, SolarWinds, Colonial Pipeline ransomware)
+| Technique | Detected | False Positives |
+|-----------|----------|-----------------|
+| Prompt injection | Yes | 0 |
+| Data poisoning | Yes | 0 |
+| IOC obfuscation (defanging) | Yes | 0 |
+| CVE exploit patterns (Log4Shell, SolarWinds, ransomware) | Yes | 0 |
+
+100% detection rate across the full benchmark suite with 0 false positives.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 Security Logs
@@ -87,186 +51,107 @@ Security Logs
                   ▼
 ┌─────────────────────────────────────────────┐
 │         LLM Analysis Pipeline               │
-│                                             │
-│  ┌─────────────┐      ┌──────────────────┐  │
-│  │IOC Extractor│      │   RAG System     │  │
-│  │  (Regex)    │      │  (ChromaDB +     │  │
-│  └──────┬──────┘      │   Embeddings)    │  │
-│         │             └────────┬─────────┘  │
-│         └──────────┬───────────┘            │
-│                    ▼                        │
-│          ┌──────────────────┐               │
-│          │  GPT-4o-mini     │               │
-│          │  Analysis Engine │               │
-│          └────────┬─────────┘               │
-└───────────────────┼─────────────────────────┘
-                    │
-          ┌─────────┴──────────┐
-          ▼                    ▼
-┌──────────────────┐  ┌────────────────────┐
-│  Security Report │  │  Attack Chain      │
-│  Threat Level    │  │  Reconstruction    │
-│  MITRE ATT&CK    │  │  Kill Chain Stages │
-│  IOCs            │  │  Timeline + IOCs   │
-│  Remediation     │  │  IR Recommendations│
-└──────────────────┘  └────────────────────┘
-          │                    │
-          └─────────┬──────────┘
-                    ▼
-┌─────────────────────────────────────────────┐
-│         Threat Actor Attribution            │
-│  RAG over APT Profiles · Confidence Scoring │
-│  Campaign Naming · Actor-specific Actions   │
+│  IOC Extractor · RAG (ChromaDB) · GPT-4o-mini│
 └─────────────────┬───────────────────────────┘
                   │
+          ┌───────┴────────┐
+          ▼                ▼
+   Security Report    Kill Chain
+   MITRE ATT&CK       Reconstruction
+   IOCs + Remediation  Timeline + IOCs
+          │                │
+          └───────┬────────┘
                   ▼
-       ┌─────────────────────┐
-       │  Security Dashboard │
-       │  Interactive HTML   │
-       └─────────────────────┘
+     Threat Actor Attribution
+     RAG over APT Profiles
+     Confidence Scoring
+                  │
+                  ▼
+         Security Dashboard
+         Single Consolidated HTML
 ```
 
 ---
 
-## 📁 Project Structure
+## Threat actor attribution
+
+The attribution engine uses RAG over a curated APT profile knowledge base. At query time, it semantically retrieves the most relevant actor profiles and passes them to the LLM with the observed TTPs and IOCs for reasoning.
+
+Profiles currently cover: APT28, APT29, Lazarus Group, APT41, FIN7, LockBit, DarkSide
+
+Attribution output includes primary and alternative candidates with confidence scores, MITRE technique overlap analysis, and actor-specific remediation recommendations.
+
+---
+
+## Project structure
 
 ```
 llm-security-automation/
-├── config.py                        # Central config — paths, API settings, constants
-│
+├── config.py
 ├── src/
-│   ├── analyzer/
-│   │   └── llm_analyzer.py          # LLM + RAG analysis engine
-│   ├── detection/
-│   │   └── adversarial.py           # Adversarial attack detection
-│   ├── chains/
-│   │   └── reconstruction.py        # Kill chain reconstruction engine
-│   ├── attribution/
-│   │   ├── __init__.py
-│   │   └── threat_actor.py          # Threat actor attribution engine
-│   └── dashboard/
-│       └── generator.py             # HTML dashboard generation
-│
+│   ├── analyzer/llm_analyzer.py        # LLM + RAG analysis engine
+│   ├── detection/adversarial.py        # Adversarial detection
+│   ├── chains/reconstruction.py        # Kill chain reconstruction
+│   ├── attribution/threat_actor.py     # Threat actor attribution
+│   └── dashboard/generator.py         # HTML dashboard
 ├── scripts/
-│   ├── run_analysis.py              # Run LLM log analysis
-│   ├── run_benchmark.py             # Run adversarial detection benchmark
-│   ├── run_day4.py                  # Run attack chain reconstruction
-│   └── run_attribution.py          # Run threat actor attribution
-│
-├── logs/                            # Security log samples
-│   ├── firewall_logs.txt
-│   ├── auth_logs.txt
-│   ├── network_logs.txt
-│   └── real-world/                  # CVE-based real logs (gitignored)
-│
-├── threat_intel/                    # RAG knowledge base
+│   ├── run_pipeline.py                 # Full pipeline runner (recommended)
+│   ├── run_analysis.py
+│   ├── run_benchmark.py
+│   ├── run_reconstruction.py
+│   └── run_attribution.py
+├── threat_intel/
 │   ├── mitre_attack.txt
 │   ├── common_threats.txt
-│   └── apt_profiles.txt             # APT group profiles for attribution RAG
-│
-├── output/                          # Generated reports (gitignored)
-│   ├── security_report.json
-│   ├── attack_chains.json
-│   ├── adversarial_benchmark.json
-│   ├── attribution_report.json
-│   └── security_dashboard_day4.html
-│
-├── requirements.txt
-├── setup.sh
-└── README.md
+│   └── apt_profiles.txt
+└── output/                             # Generated reports (gitignored)
 ```
 
 ---
 
-## 🚀 Quick Start
+## Setup
 
-### Prerequisites
-- Python 3.8+
-- OpenAI API key — [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-
-### Setup
 ```bash
 git clone https://github.com/ShrutiSingh1506/llm-security-automation.git
 cd llm-security-automation
 
 python -m venv venv
-source venv/bin/activate       # Windows: venv\Scripts\activate
+source venv/bin/activate
 
 pip install -r requirements.txt
 
 cp .env.template .env
-# Add your OpenAI API key to .env
+# Add your OpenAI API key
 ```
 
-### Run
 ```bash
-# LLM log analysis + dashboard
-python scripts/run_analysis.py
+# Run the full pipeline (recommended)
+python scripts/run_pipeline.py
 
-# Adversarial detection benchmark
-python scripts/run_benchmark.py
-
-# Attack chain reconstruction
-python scripts/run_day4.py
-
-# Threat actor attribution
-python scripts/run_attribution.py
-
-# Open dashboard
-open output/security_dashboard_day4.html
+# Or run individual stages
+python scripts/run_analysis.py       # Log analysis + dashboard
+python scripts/run_benchmark.py      # Adversarial detection benchmark
+python scripts/run_reconstruction.py # Kill chain reconstruction
+python scripts/run_attribution.py    # Threat actor attribution
 ```
 
 ---
 
-## 🔬 Technical Details
+## Roadmap
 
-| Component | Technology |
-|---|---|
-| LLM | OpenAI GPT-4o-mini via LangChain |
-| Vector DB | ChromaDB (local, in-memory) |
-| Embeddings | OpenAI text-embedding-ada-002 |
-| Output Parsing | Pydantic + JsonOutputParser |
-| IOC Extraction | Regex (IP, domain, hash patterns) |
-| Kill Chain | Cyber Kill Chain + MITRE ATT&CK |
-| Attribution | RAG over APT profiles + LLM reasoning |
-| Dashboard | Plotly + custom HTML/CSS |
-| Adversarial Defense | Pattern matching + heuristics |
-
-### RAG Configuration
-- Chunk size: 500 chars · Overlap: 50 chars
-- Retrieval: top-3 semantically relevant chunks per query
-- LLM temperature: 0 (deterministic output for security analysis)
+- [x] LLM log analysis + RAG + dashboard
+- [x] Adversarial attack detection
+- [x] Kill chain reconstruction
+- [x] Threat actor attribution
+- [ ] False positive analysis
+- [ ] YARA rule generation
 
 ---
 
-## 🗺️ Roadmap
+## RAG configuration
 
-| Phase | Feature | Status |
-|---|---|---|
-| 1–2 | LLM Log Analysis + RAG + Dashboard | ✅ Complete |
-| 3 | Adversarial Attack Detection | ✅ Complete |
-| 4 | Attack Chain Reconstruction | ✅ Complete |
-| 5 | Threat Actor Attribution | ✅ Complete |
-| 6 | False Positive Analysis | 🔲 Planned |
-| 7 | YARA Rule Generation + Final Polish | 🔲 Planned |
+Chunk size: 500 chars · Overlap: 50 chars · Retrieval: top-3 chunks per query · LLM temperature: 0
 
 ---
 
-## 💰 Cost
-
-Using `gpt-4o-mini`: ~$0.15/1M input tokens · ~$0.60/1M output tokens  
-Estimated full project cost: **$2–5**
-
----
-
-## 📄 License
-
-Educational/Portfolio Project — free to use and modify.
-
----
-
-## 👤 Author
-
-**Shruti Singh**  
-MS in Management Information Systems · Texas A&M University · GPA 4.0  
-[linkedin.com/in/shruti-singh96](https://www.linkedin.com/in/shruti-singh96) · shruti.singh1506@hotmail.com
+Shruti Singh · [LinkedIn](https://linkedin.com/in/shruti-singh96) · [Portfolio](https://shrutisingh-portfolio.netlify.app)

@@ -107,8 +107,10 @@ class LLMSecurityAnalyzer:
                 metadatas.append({"source": path.name})
 
         if chunks:
+            embeddings = self._embeddings.embed_documents(chunks)
             self._collection.add(
                 documents=chunks,
+                embeddings=embeddings,
                 metadatas=metadatas,
                 ids=[f"doc_{i}" for i in range(len(chunks))],
             )
